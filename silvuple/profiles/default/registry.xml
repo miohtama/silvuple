@@ -1,0 +1,8 @@
+<registry>
+    <records interface="silvuple.settings.ISettings" prefix="silvuple">
+        <!-- Set default values -->
+
+        <!-- Leave to empty string -->
+        <value key="adminLanguage"></value>
+    </records>
+</registry>

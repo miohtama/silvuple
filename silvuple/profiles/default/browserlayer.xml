@@ -1,0 +1,6 @@
+<layers>
+ <layer
+     name="silvuple"
+     interface="silvuple.interfaces.IAddonSpecific"
+     />
+</layers>

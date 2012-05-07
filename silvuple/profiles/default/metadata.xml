@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<metadata>
+  <!-- Increase this only when you need to add upgrade profiles for your add-on -->
+  <version>1000</version>
+  <dependencies>
+    <dependency>profile-plone.app.registry:default</dependency>
+  </dependencies>
+</metadata>
