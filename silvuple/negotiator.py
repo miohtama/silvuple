@@ -3,34 +3,76 @@
     Override user interface language setting
 
 """
+
+from zope.interface import Interface, implements
 from AccessControl import getSecurityManager
-from zope.component import adapter
 from ZPublisher.interfaces import IPubAfterTraversal
 from zope.component import getUtility, ComponentLookupError
 from Products.CMFCore import permissions
-
+from Products.CMFCore.interfaces import IContentish, IFolderish
+from five import grok
 from plone.registry.interfaces import IRegistry
+from Products.CMFCore.utils import getToolByName
 
 from interfaces import IAddonSpecific
 from settings import ISettings
 
-@adapter(IPubAfterTraversal)
-def admin_language_negotiator(event):
 
-    # Keep the current request language (negotiated on portal_languages)
-    # untouched
+from Products.PloneLanguageTool.interfaces import INegotiateLanguage
+
+
+
+def find_context(request):
+    """Find the context from the request
+    """
+    published = request.get('PUBLISHED', None)
+    context = getattr(published, '__parent__', None)
+    if context is None:
+        context = request.PARENTS[0]
+    return context
+
+@grok.subscribe(IPubAfterTraversal)
+def admin_language_negotiator(event):
+    """
+    Event handler which pokes the language after traversing and authentication is done, but before rendering.
+
+    Normally language negotiation happens in LanguageTool.setLanguageBindings() but this is before we have found request["PUBLISHED"]
+    and we know if we are an editor or not.
+    """
 
     request = event.request
 
-    context = event.object
+    lang = get_editor_language(request)
 
-    if not IAddonSpecific.provideBy(request):
+    if lang:
+        # Kill it with fire
+        request["LANGUAGE"] = lang
+        tool = request["LANGUAGE_TOOL"]
+        tool.LANGUAGE = lang
+        tool.LANGUAGE_LIST = [lang]
+        tool.DEFAULT_LANGUAGE = lang
+
+def get_editor_language(request):
+    """
+    Get editor language override if Silvuple is installed.
+    """
+
+    if not IAddonSpecific.providedBy(request):
         # Add on is not active
-        return
+        return None
+
+    context = find_context(request)
+
+    # Filter out CSS and other non-sense
+    # IFolderish check includes site root
+    if not (IContentish.providedBy(context) or IFolderish.providedBy(context)):
+        # Early terminate
+        return None
 
     # Check if we are the editor
-    if not getSecurityManager().checkPermission(permissions .ModifyPortalContent, context):
-        return
+    if not getSecurityManager().checkPermission(permissions.ModifyPortalContent, context):
+        # Anon visitor, normal language ->
+        return None
 
     try:
 
@@ -43,14 +85,14 @@ def admin_language_negotiator(event):
         # Registry schema and actual values do not match
         # Quick installer has not been run or need to rerun
         # to update registry.xml values to database
-        return
-
-    import pdb ; pdb.set_trace()
+        return None
 
     # Read language from settings
     language = settings.adminLanguage
 
     if language:
         # Fake new language for all authenticated users
-        event.request['LANGUAGE'] = language
+        return language
+
+    return None
 

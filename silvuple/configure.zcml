@@ -42,4 +42,6 @@
       directory="templates"
       layer=".interfaces.IAddonSpecific" />
 
+
+
 </configure>

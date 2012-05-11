@@ -1,5 +1,5 @@
 <registry>
-    <records interface="silvuple.settings.ISettings" prefix="silvuple">
+    <records interface="silvuple.settings.ISettings" prefix="silvuple.settings.ISettings">
         <!-- Set default values -->
 
         <!-- Leave to empty string -->
