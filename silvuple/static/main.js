@@ -102,7 +102,7 @@
 
                             // Mark master language copy with
                             // .canonical-item CSS class
-                            if(!item.canonical) {
+                            if(item.canonical) {
                                 td.addClass("canonical-item");
                             }
 

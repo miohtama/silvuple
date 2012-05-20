@@ -37,6 +37,7 @@ from plone.uuid.interfaces import IUUID
 from Products.LinguaPlone.interfaces import ITranslatable
 from plone.registry.interfaces import IRegistry
 from Products.statusmessages.interfaces import IStatusMessage
+from plone.app.layout.navigation.interfaces import INavigationRoot
 
 
 # Local imports
@@ -218,6 +219,10 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             parent = context.aq_parent
 
             if ISiteRoot.providedBy(parent):
+                return True
+
+            # Parent is a language base folder at plone site root
+            if INavigationRoot.providedBy(parent):
                 return True
 
             if ITranslatable.providedBy(parent):
