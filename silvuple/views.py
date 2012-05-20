@@ -265,6 +265,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
             canonical = None
 
+            # First snatch canonical  item for this content
             for lang in entry.values():
             
                 if lang.get("canonical", False):
@@ -273,9 +274,12 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                 # Do not leak out to JSON serialization
                 lang["context"] = None
 
+            # Then populate untranslated languages
             for lang in entry.values():
                 if not lang["available"]:
                     lang["canTranslate"] = can_translate(canonical, lang)
+                    # Point to LinguaPlone Translate into... form
+                    lang["url"] = "%s/@@translate?newlanguage=%s" % (canonical.absolute_url(), lang["language"])
 
         # Convert pre content entries to lists, so that we can guarantee
         # the order of langauges when passing thru JSON

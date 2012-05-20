@@ -2,12 +2,15 @@
  * Silvuple user interface Javascript
  */
 
- /*global window,document*/
+ /*global window, document, console*/
 
 (function($) {
      
     "use strict";
 
+    // http://opensourcehacker.com/2011/03/15/everyone-loves-and-hates-console-log/
+    // Ignore console on platforms where it is not available
+    if (typeof(window.console) == "undefined") { console = {}; console.log = console.warn = console.error = function(a) {}; }
 
     /**
      * A dynamically populated table state machine switcher.
@@ -51,16 +54,16 @@
             },
 
             // Format one entry in the listing
-            "items" : {
+            items : {
 
                 // Populate <tr> from incoming data
                 'listing-entry' : {
 
                     /**
                      * Populate an entry in a template dynamically using jQuery.
-                     * 
+                     *
                      * This directive callback has *this* set to the current list element.
-                     * 
+                     *
                      * @param  {Object} target Object of {index : list index, element : DOMNode, value : existing element text value}
                      */
                     html : function(target) {
@@ -70,44 +73,79 @@
                         var $elem = $(target.element);
                         var i;
 
+                        // On the subsequent runs,
+                        // make sure this element does not have any
+                        // existing <td>s
+                        $elem.empty();
+
                         // Example incoming data object
                         // [
                         // { language="de", availble=false }
                         // { language="en", available=true, url="http://localhost:9944/Plone/en", title="English Site version", canonical=true}
                         // ]
 
-                        // Dynamically create <td> elements for each 
+                        // Dynamically create <td> elements for each
                         // subitem in the data
                         for(i=0; i<this.length; i++) {
 
                             var item = this[i];
-                            console.log(item);
                             
                             var td = $("<td>");
 
-                            var a = $("<a>");
+                            var actionLink = $("<a>");
+                            var editLink = null;
+                            var manageLink = null;
 
-                            if(!item.available) {
+                            if(!item.available && item.language != "neutral") {
+
+                                // Create quick translation links
+
                                 if(item.canTranslate) {
-                                    a.text("Translate");
-                                    a.attr("href", "#");
+                                    actionLink.text("Translate");
+                                    actionLink.attr("href", item.url);
+                                    actionLink.addClass("translate-link quick-link");
                                 } else {
-                                    a.text("---");
-                                    a.attr("href", "#");
+                                    actionLink.text("---");
+                                    actionLink.attr("href", "#");
                                 }
                             } else {
-                                a.text(item.title);
-                                a.attr("href", item.url);
+
+                                // Create go to and quick edit links
+
+                                actionLink.text(item.title);
+                                actionLink.attr("href", item.url);
+                                actionLink.addClass("view-link");
+
+
+                                editLink = $("<a>");
+                                editLink.addClass("edit-link quick-link");
+                                editLink.text("Edit");
+                                editLink.attr("href", item.url + "/edit");
                             }
 
                             // Mark master language copy with
                             // .canonical-item CSS class
                             if(item.canonical) {
                                 td.addClass("canonical-item");
+
+                                // TODO: translator manager page does not support
+                                // AJAXy actions because it consists of 3 forms
+                                manageLink = $("<a>");
+                                manageLink.addClass("manage-link quick-link");
+                                manageLink.text("Manage");
+                                manageLink.attr("href", item.url + "/manage_translations_form");
+                                manageLink.addClass("edit-link");
                             }
 
-                            td.append(a);
+                            td.append(actionLink);
+                            
+                            if(editLink) {
+                                td.append(editLink);
+                            }
 
+                            if(manageLink) {
+                                td.append(manageLink);
+                            }
 
                             $elem.append(td);
                         }
@@ -123,15 +161,51 @@
     }
 
 
+    /**
+     * Actions to take when a AJAXy form is closed
+     *
+     * @return {String} prepOverlay action
+     */
+    function onShortcutFormClose() {
+
+        console.log("onShortcutFormClose()");
+        reloadContentListing();
+
+        //  prepOverlay() API contract
+        //  https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js#L385
+        return "close";
+    }
+
+    /**
+     * Add jQuery Tools code for edit and translate pop-ups
+     *
+     * http://plone.org/products/plone.app.jquerytools
+     */
+    function installOverlayDelegates() {
+
+        $('.translator-master-content .edit-link, .translator-master-content .translate-link').prepOverlay({
+            subtype: "ajax",
+            filter: "#content>*",
+            formselector: "form",
+            noform: onShortcutFormClose,
+            closeselector: "[name=form.button.Cancel]",
+            width : "90%"
+        });
+
+    }
+
     function reloadContentListing() {
+
+        console.log("reloadContentListing()");
 
         // Initially set loader visible
         renderContentListing(true);
 
         function success(data) {
             // Got data from the server, proceed ->
-            console.log(data);
             renderContentListing(false, null, data);
+
+            installOverlayDelegates();
         }
 
         function fail(jqXHR, textStatus, errorThrown) {
@@ -156,7 +230,8 @@
               dataType: 'json',
               data: null,
               success: success,
-              error : fail
+              error : fail,
+              type : "POST" // Bust Varnish cache
             });
         }
 
@@ -173,6 +248,8 @@
 
             // Populate page for the first time
             reloadContentListing();
+
+            // installOverlayDelegates();
         }
 
     });

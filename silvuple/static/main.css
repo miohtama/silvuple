@@ -13,9 +13,25 @@
 #content .translator-master-content a:active,
 #content .translator-master-content a:hover {
     text-decoration: none !important;
-    border-bottom: 0 !important;
+    border-bottom: 0 !important;    
+    display: inline-block;
+    margin-right: 0.5em;
 }
 
-.canonical-item {
+
+.view-link {
+    display: block !important;
+}
+
+.canonical-item .view-link {
     font-weight: bold;
 }
+
+#content .translator-master-content a.quick-link,
+#content .translator-master-content a.quick-link:visited,
+#content .translator-master-content a.quick-link:active,
+#content .translator-master-content a.quick-link:hover {
+    color: red !important;
+    font-size: 80%  !important;
+}
+
