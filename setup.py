@@ -20,7 +20,7 @@ setup(name = "silvuple",
     author = "Mikko Ohtamaa",
     author_email = "mikko@opensourcehacker.com",
     url = "http://opensourcehacker.com",
-    install_requires = ["five.grok", "z3c.jbot", "plone.app.dexterity", "plone.app.registry", "collective.js.jqueryui"],
+    install_requires = ["five.grok", "plone.app.dexterity", "plone.app.registry", "odict"],
     packages = ['silvuple'],
     classifiers=[
         "Framework :: Plone",

@@ -7,8 +7,16 @@
  -->
 
 <object name="portal_javascripts">
+
+ 
+    <javascript
+        id="++resource++silvuple/transparency.js"
+        cacheable="True" compression="safe" cookable="True"
+        enabled="True" expression=""  inline="False" insert-after="toc.js"/>
+
     <javascript
         id="++resource++silvuple/main.js"
         cacheable="True" compression="safe" cookable="True"
         enabled="True" expression=""  inline="False" insert-after="toc.js"/>
+
 </object>

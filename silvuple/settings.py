@@ -18,6 +18,14 @@ class ISettings(form.Schema):
 
     adminLanguage = schema.TextLine(title=u"Admin language", description=u"Type two letter language code and admins always use this language")
 
+    form.widget(enabled_overrides=CheckBoxFieldWidget)
+    content_types = schema.List(title=u"Enabled content types",
+                               description=u"On which content types Facebook Like-button should appear",
+                               required=False, default=["Document"],
+                               value_type=schema.Choice(source="mfabrik.like.content_types"),
+                               )
+
+
 class SettingsEditForm(RegistryEditForm):
     """
     Define form logic
@@ -36,3 +44,4 @@ class SettingsView(grok.CodeView):
         view = view_factor(self.context, self.request)
         return view()
 
+    

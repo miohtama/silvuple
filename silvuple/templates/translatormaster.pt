@@ -1,0 +1,67 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master">
+
+
+    <metal:block fill-slot="javascript_head_slot">
+        <script tal:replace="structure view/getSetupJavascript" />
+    </metal:block>
+
+    <metal:block fill-slot="main">
+
+        <h1 class="documentFirstHeading">Translator Master</h1> 
+
+        <p>Manage your translated content below</p>
+
+        <div id="content-core">
+
+            <div class="translator-master-loader">
+
+                <div class="loading" style="display: none">
+                    <p>
+                        Loading content
+                    </p>
+                    <p>
+                        <img tal:attributes="src string:${context/@@plone_portal_state/portal_url}/spinner.gif" />
+                    </p>                    
+                </div>
+
+                <div class="failure" style="display: none">
+                    <dl class="portalMessage error">
+                        <dt>Error loading content data</dt>
+                        <dd data-bind="failureMessage"></dd>
+                    </dl>
+                </div>
+
+                <table class="listing translator-master-content" style="display:none">
+
+                    <thead>
+                        <tr>
+                            <tal:lang omit-tag="" repeat="lang python:view.helper.getLanguages().values()">
+                                <th tal:attributes="data-lang-id lang/id" tal:content="lang/name" />                            
+                            </tal:lang>
+                        </tr>
+                    </thead>
+
+
+                    <tbody class="items">
+
+                        <!-- Generate an empty template row which can be applied on -->
+                        <tr class="listing-entry">
+                            <td>
+                                <a data-bind="link"></a>                        
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </metal:block>
+
+</html>

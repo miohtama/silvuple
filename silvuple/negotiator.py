@@ -4,7 +4,6 @@
 
 """
 
-from zope.interface import Interface, implements
 from AccessControl import getSecurityManager
 from ZPublisher.interfaces import IPubAfterTraversal
 from zope.component import getUtility, ComponentLookupError
@@ -12,18 +11,14 @@ from Products.CMFCore import permissions
 from Products.CMFCore.interfaces import IContentish, IFolderish
 from five import grok
 from plone.registry.interfaces import IRegistry
-from Products.CMFCore.utils import getToolByName
 
 from interfaces import IAddonSpecific
 from settings import ISettings
 
-
-from Products.PloneLanguageTool.interfaces import INegotiateLanguage
-
-
-
 def find_context(request):
     """Find the context from the request
+
+    http://stackoverflow.com/questions/10489544/getting-published-content-item-out-of-requestpublished-in-plone
     """
     published = request.get('PUBLISHED', None)
     context = getattr(published, '__parent__', None)
