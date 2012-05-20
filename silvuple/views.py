@@ -27,32 +27,40 @@ except ImportError:
 
 # Zope imports
 from zope.interface import Interface
-from zope.component import getMultiAdapter
+from zope.component import getMultiAdapter, ComponentLookupError, getUtility
 from five import grok
 from Products.CMFCore.interfaces import ISiteRoot
 
-# Local imports
-from interfaces import IAddonSpecific
 
 from plone.app.layout.globals.interfaces import ITools, IPortalState
 from plone.uuid.interfaces import IUUID
 from Products.LinguaPlone.interfaces import ITranslatable
+from plone.registry.interfaces import IRegistry
+from Products.statusmessages.interfaces import IStatusMessage
+
+
+# Local imports
+from interfaces import IAddonSpecific
+from settings import ISettings
 
 grok.templatedir("templates")
 grok.layer(IAddonSpecific)
 
-
 # The generated HTML snippet going to <head>
 SETTINGS_TEMPLATE = u"""
 <script type="text/javascript">
-    var %(name)s = %(json)s;
+var %(name)s = %(json)s;
 </script>
 """
 
-# These content types are not translatable
-FILTER_CONTENT_TYPES = [
-    "Image"
-]
+def map_language_id(lang):
+    """
+    Handle neutral (empty) to "neutral" language id transformation
+    """
+    if not lang:
+        return "neutral"
+
+    return lang
 
 class MultiLinguageContentListingHelper(grok.CodeView):
     """
@@ -61,6 +69,26 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
     grok.context(ISiteRoot)
     grok.name("multi-lingual-content-listing-helper")
+
+
+    def getSettings(self):
+        """
+        Get silvuple Site Setup settings
+        """
+        try:
+
+            # Will raise an exception if plone.app.registry is not quick installed
+            registry = getUtility(IRegistry)
+
+            # Will raise exception if your product add-on installer has not been run
+            settings = registry.forInterface(ISettings)
+        except (KeyError, ComponentLookupError):
+            # Registry schema and actual values do not match
+            # Quick installer has not been run or need to rerun
+            # to update registry.xml values to database
+            return None
+
+        return settings
 
     def getLanguages(self):
         """
@@ -94,6 +122,9 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             if lang != preferred:
                 result[lang] = data
 
+        # Add special entry for "neutral" non-real language
+        result["neutral"] = dict(id="", name="Neutral", native="Neutral")
+
         # For the convenience, export language ISO code also inside data,
         # so it easier to iterate data in the templates
         for lang, data in result.items():
@@ -106,7 +137,13 @@ class MultiLinguageContentListingHelper(grok.CodeView):
         """
         Filtering function to check whether content types should appear in the translation list or not
         """
-        return not brain["portal_type"] in FILTER_CONTENT_TYPES
+
+        settings = self.getSettings()
+
+        if not settings:
+            return False
+
+        return brain["portal_type"] in settings.contentTypes
 
     def getContentByCanonical(self):
         """
@@ -130,7 +167,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
         portal_catalog = tools.catalog()
 
-        all_content = portal_catalog(Language = "")
+        all_content = portal_catalog(Language = "all")
 
         # List of UUID -> entry data mappings
         result = OrderedDict()
@@ -165,10 +202,10 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                 result[uuid] = entry
                 return entry
 
-
         for brain in all_content:           
             
             if not self.shouldTranslate(brain):
+                print "Ignoring: %s" % brain.getURL()
                 continue
 
             context = brain.getObject()          
@@ -186,7 +223,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                 url = context.absolute_url()
             )
 
-            entry[context.Language()] = data
+            entry[map_language_id(context.Language())] = data
 
         # Convert all entries to JSON lists instead of dicts
         # sorted by language order defined ab
@@ -226,6 +263,10 @@ class TranslatorMaster(grok.View):
 
     def update(self):
         self.helper = MultiLinguageContentListingHelper(self.context, self.request)
+
+        if not self.helper.getSettings():
+            messages = IStatusMessage(self.request)
+            messages.addStatusMessage(u"Silvuple not configured in Site Setup", type="error")
 
 
     def getJavascriptContextVars(self):

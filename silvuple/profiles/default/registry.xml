@@ -4,5 +4,16 @@
 
         <!-- Leave to empty string -->
         <value key="adminLanguage"></value>
+
+        <value key="contentTypes" purge="false">
+            <element>Document</element>
+            <element>News Item</element>
+            <element>Folder</element>
+        </value>
     </records>
+
+
+
+
+
 </registry>

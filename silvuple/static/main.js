@@ -25,8 +25,6 @@
             failureMessage : failureMessage
         };
 
-        console.log(items);
-
         // What style attibute
         // we use to switch between states
         var visible = "display: block";
@@ -49,7 +47,7 @@
 
             // Got the content
             listing : {
-                style : function() { return this.items ? visible : invisible; }
+                style : function() { return this.items ? visible : invisible; },
             },
 
             // Format one entry in the listing
@@ -57,10 +55,11 @@
 
                 // Popuplate <a> from incoming data
                 link : {
-                    href : function() { return this["en"].link; },
-                    text : function() { return this["en"].text; }
+                    href : function() { return this["en"].url; },
+                    text : function() { return this["en"].title; }
                 }
             }
+
         };
 
         // Execute Transparency templating

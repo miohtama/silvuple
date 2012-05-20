@@ -51,9 +51,10 @@
                         <!-- Generate an empty template row which can be applied on -->
                         <tr class="listing-entry">
                             <td>
-                                <a data-bind="link"></a>                        
+                                <a data-bind="link"></a>                       
                             </td>
                         </tr>
+                        
                     </tbody>
 
                 </table>

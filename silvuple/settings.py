@@ -7,6 +7,10 @@
 from zope import schema
 from five import grok
 from Products.CMFCore.interfaces import ISiteRoot
+from zope.schema.interfaces import IVocabularyFactory
+
+from z3c.form.browser.checkbox import CheckBoxFieldWidget
+
 
 from plone.z3cform import layout
 from plone.directives import form
@@ -18,11 +22,11 @@ class ISettings(form.Schema):
 
     adminLanguage = schema.TextLine(title=u"Admin language", description=u"Type two letter language code and admins always use this language")
 
-    form.widget(enabled_overrides=CheckBoxFieldWidget)
-    content_types = schema.List(title=u"Enabled content types",
-                               description=u"On which content types Facebook Like-button should appear",
-                               required=False, default=["Document"],
-                               value_type=schema.Choice(source="mfabrik.like.content_types"),
+    form.widget(contentTypes=CheckBoxFieldWidget)
+    contentTypes = schema.List(title=u"Enabled content types",
+                               description=u"Which content types appear on translation master page",
+                               required=False, 
+                               value_type=schema.Choice(source="plone.app.vocabularies.ReallyUserFriendlyTypes"),
                                )
 
 
