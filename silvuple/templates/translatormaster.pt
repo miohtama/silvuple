@@ -13,7 +13,7 @@
 
         <h1 class="documentFirstHeading">Translator Master</h1> 
 
-        <p>Manage your translated content below</p>
+        <p>Manage your translated content below. Dashed out items must have their parents translated first before the items itself can be translated.</p>
 
         <div id="content-core">
 
@@ -49,12 +49,8 @@
                     <tbody class="items">
 
                         <!-- Generate an empty template row which can be applied on -->
-                        <tr class="listing-entry">
-                            <td>
-                                <a data-bind="link"></a>                       
-                            </td>
-                        </tr>
-                        
+                        <tr class="listing-entry" />
+
                     </tbody>
 
                 </table>

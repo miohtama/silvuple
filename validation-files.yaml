@@ -2,5 +2,5 @@
 all: |
     *
     !RE:.*\/\..*|^\..*
-    !samitheme/static/opensans
-    !./*.html
+    !static/transparency.js
+    

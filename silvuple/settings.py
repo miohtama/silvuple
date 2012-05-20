@@ -7,7 +7,6 @@
 from zope import schema
 from five import grok
 from Products.CMFCore.interfaces import ISiteRoot
-from zope.schema.interfaces import IVocabularyFactory
 
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 
@@ -20,7 +19,9 @@ from plone.app.registry.browser.controlpanel import ControlPanelFormWrapper
 class ISettings(form.Schema):
     """ Define settings data structure """
 
-    adminLanguage = schema.TextLine(title=u"Admin language", description=u"Type two letter language code and admins always use this language")
+    adminLanguage = schema.TextLine(title=u"Admin language", 
+        description=u"Type two letter language code and admins always use this language",
+        required=False)
 
     form.widget(contentTypes=CheckBoxFieldWidget)
     contentTypes = schema.List(title=u"Enabled content types",
@@ -48,4 +49,3 @@ class SettingsView(grok.CodeView):
         view = view_factor(self.context, self.request)
         return view()
 
-    

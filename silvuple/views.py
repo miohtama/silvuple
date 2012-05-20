@@ -153,11 +153,11 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
             [
                 ...
-                {
-                    en : { available : true, title : "Foobar", canonical : True, url : "http://" },
-                    fi : { available : true, title : "Barbar", canonical : False, ... },
-                    ru : { available : false }
-                }
+                [
+                    { language : "en", available : true, title : "Foobar", canonical : True, url : "http://" },
+                    { language : "fi", available : true, title : "Barbar", canonical : False, ... },
+                    { language : "ru", available : false }
+                ]
             ]
  
         Not available languages won't get any entries.
@@ -175,10 +175,16 @@ class MultiLinguageContentListingHelper(grok.CodeView):
         # Create a dictionary entry populated with default languages,
         # so that languages come always in the same order
         # E.g. {en:{"available":False}}
-        base_entry = OrderedDict()
+        
         langs = self.getLanguages()
-        for lang in langs:
-            base_entry[lang] = dict(available=False)
+        
+
+        def get_base_entry():
+            """ Item row for all languages, everything set off by default """
+            base_entry = OrderedDict()
+            for lang in langs:
+                base_entry[lang]= dict(available=False, language=lang, canTranslate=False)
+            return base_entry
 
         def get_or_create_handle(translatable):
             """
@@ -198,14 +204,34 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             if uuid in result:
                 return result[uuid]
             else:
-                entry = base_entry.copy()
+                entry = get_base_entry()
                 result[uuid] = entry
                 return entry
+
+        def can_translate(context, language):
+            """ Check if required parent translations are in place
+
+
+
+            :return: True if the item can be translated
+            """
+            parent = context.aq_parent
+
+            if ISiteRoot.providedBy(parent):
+                return True
+
+            if ITranslatable.providedBy(parent):
+                translatable = ITranslatable(parent)
+            else:
+                raise RuntimeError("Not translatable parent: %s" % parent)
+
+            translation = translatable.getTranslation(language)
+
+            return translation is not None
 
         for brain in all_content:           
             
             if not self.shouldTranslate(brain):
-                print "Ignoring: %s" % brain.getURL()
                 continue
 
             context = brain.getObject()          
@@ -220,14 +246,36 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             data = dict(
                 canonical = translatable.isCanonical(),
                 title = context.Title(),
-                url = context.absolute_url()
-            )
-
+                url = context.absolute_url(),
+                lang = map_language_id(context.Language()),
+                available = True,
+                path = context.absolute_url_path(),
+                context = context                
+                )
+            
             entry[map_language_id(context.Language())] = data
 
-        # Convert all entries to JSON lists instead of dicts
-        # sorted by language order defined ab
-        return result.values() 
+        # Fill in items which can be translated
+        for entry in result.values():
+
+            canonical = None
+
+            for lang in entry.values():
+            
+                if lang.get("canonical", False):
+                    canonical = lang["context"]
+
+                # Do not leak out to JSON serialization
+                lang["context"] = None
+
+            for lang in entry.values():
+                if not lang["available"]:
+                    lang["canTranslate"] = can_translate(canonical, lang)
+
+        # Convert pre content entries to lists, so that we can guarantee
+        # the order of langauges when passing thru JSON
+        for entry in result.values():
+            yield list(entry.values())
 
     def render(self):
         """
@@ -249,6 +297,8 @@ class JSONContentListing(grok.CodeView):
 
     def render(self):
         listing = self.helper.getContentByCanonical()
+        # Ungeneratorify
+        listing = list(listing)
         return json.dumps(listing)
 
 

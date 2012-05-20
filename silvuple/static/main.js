@@ -47,16 +47,72 @@
 
             // Got the content
             listing : {
-                style : function() { return this.items ? visible : invisible; },
+                style : function() { return this.items ? visible : invisible; }
             },
 
             // Format one entry in the listing
             "items" : {
 
-                // Popuplate <a> from incoming data
-                link : {
-                    href : function() { return this["en"].url; },
-                    text : function() { return this["en"].title; }
+                // Populate <tr> from incoming data
+                'listing-entry' : {
+
+                    /**
+                     * Populate an entry in a template dynamically using jQuery.
+                     * 
+                     * This directive callback has *this* set to the current list element.
+                     * 
+                     * @param  {Object} target Object of {index : list index, element : DOMNode, value : existing element text value}
+                     */
+                    html : function(target) {
+
+                        // Convert raw DOM to jQuery Wrapper
+                        // for modifying it in-place
+                        var $elem = $(target.element);
+                        var i;
+
+                        // Example incoming data object
+                        // [
+                        // { language="de", availble=false }
+                        // { language="en", available=true, url="http://localhost:9944/Plone/en", title="English Site version", canonical=true}
+                        // ]
+
+                        // Dynamically create <td> elements for each 
+                        // subitem in the data
+                        for(i=0; i<this.length; i++) {
+
+                            var item = this[i];
+                            console.log(item);
+                            
+                            var td = $("<td>");
+
+                            var a = $("<a>");
+
+                            if(!item.available) {
+                                if(item.canTranslate) {
+                                    a.text("Translate");
+                                    a.attr("href", "#");
+                                } else {
+                                    a.text("---");
+                                    a.attr("href", "#");
+                                }
+                            } else {
+                                a.text(item.title);
+                                a.attr("href", item.url);
+                            }
+
+                            // Mark master language copy with
+                            // .canonical-item CSS class
+                            if(!item.canonical) {
+                                td.addClass("canonical-item");
+                            }
+
+                            td.append(a);
+
+
+                            $elem.append(td);
+                        }
+
+                    }
                 }
             }
 
@@ -74,6 +130,7 @@
 
         function success(data) {
             // Got data from the server, proceed ->
+            console.log(data);
             renderContentListing(false, null, data);
         }
 

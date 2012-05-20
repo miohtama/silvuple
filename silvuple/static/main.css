@@ -8,3 +8,10 @@
  * http://collective-docs.readthedocs.org/en/latest/templates_css_and_javascripts/css.html
  */ 
 
+#content .translator-master-content a,
+#content .translator-master-content a:visited,
+#content .translator-master-content a:active,
+#content .translator-master-content a:hover {
+    text-decoration: none !important;
+    border-bottom: 0 !important;
+}
