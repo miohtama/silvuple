@@ -92,9 +92,11 @@
                             
                             var td = $("<td>");
 
+                            // Different elements we can generate
                             var actionLink = $("<a>");
                             var editLink = null;
                             var manageLink = null;
+                            var note = null;
 
                             if(!item.available && item.language != "neutral") {
 
@@ -126,8 +128,13 @@
                             // Mark master language copy with
                             // .canonical-item CSS class
                             if(item.canonical) {
+
                                 td.addClass("canonical-item");
 
+                                note = $("<p>");
+                                note.text(item.path);
+                                note.addClass("note");
+                                
                                 // TODO: translator manager page does not support
                                 // AJAXy actions because it consists of 3 forms
                                 manageLink = $("<a>");
@@ -138,6 +145,10 @@
                             }
 
                             td.append(actionLink);
+
+                            if(note) {
+                                td.append(note);
+                            }
                             
                             if(editLink) {
                                 td.append(editLink);
@@ -148,6 +159,15 @@
                             }
 
                             $elem.append(td);
+                        }
+
+                        // Zebra-striping
+                        if(target.index % 2 === 0) {
+                            $elem.addClass("even");
+                            $elem.removeClass("odd");
+                        } else {
+                            $elem.addClass("odd");
+                            $elem.removeClass("even");
                         }
 
                     }

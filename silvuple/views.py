@@ -144,7 +144,48 @@ class MultiLinguageContentListingHelper(grok.CodeView):
         if not settings:
             return False
 
+        # XXX: Hard-coded Products.Carousel filtering
+        if "Carousel" in brain["Title"]:
+            return False
+
         return brain["portal_type"] in settings.contentTypes
+
+
+    def sortContentListing(self, result):
+        """
+        Sort result listing items by canonical path.
+
+        :param result: Listing of entry dicts as described by getContentByCanonical()
+        """
+
+        def get_canonical(entry):
+            """
+            Get canonical language in the entry dict
+            """
+            canonical = None
+
+            # First snatch canonical  item for this content
+            for lang in entry:
+            
+                if lang.get("canonical", False):
+                    canonical = lang
+
+            return canonical
+
+
+        def compare(a, b):
+            """
+            """
+            can_a = get_canonical(a)
+            can_b = get_canonical(b)
+
+            if can_a and can_b:
+                return cmp(can_a["path"], can_b["path"])
+            else:
+                return 0
+
+        result.sort(compare)
+
 
     def getContentByCanonical(self):
         """
@@ -210,9 +251,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                 return entry
 
         def can_translate(context, language):
-            """ Check if required parent translations are in place
-
-
+            """ Check if required parent translations are in place so that we can translate this item
 
             :return: True if the item can be translated
             """
@@ -248,6 +287,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
             entry = get_or_create_handle(translatable)
 
+            # Data exported to JSON + context object needed for post-processing
             data = dict(
                 canonical = translatable.isCanonical(),
                 title = context.Title(),
@@ -277,14 +317,20 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             # Then populate untranslated languages
             for lang in entry.values():
                 if not lang["available"]:
-                    lang["canTranslate"] = can_translate(canonical, lang)
+
+                    lang_code = lang["language"]
+
+                    lang["canTranslate"] = can_translate(canonical, lang_code)
                     # Point to LinguaPlone Translate into... form
-                    lang["url"] = "%s/@@translate?newlanguage=%s" % (canonical.absolute_url(), lang["language"])
+                    lang["url"] = "%s/@@translate?newlanguage=%s" % (canonical.absolute_url(), lang_code)
 
         # Convert pre content entries to lists, so that we can guarantee
         # the order of langauges when passing thru JSON
-        for entry in result.values():
-            yield list(entry.values())
+        result = [ entry.values() for entry in result.values() ]
+
+        self.sortContentListing(result)
+
+        return result
 
     def render(self):
         """
@@ -306,8 +352,6 @@ class JSONContentListing(grok.CodeView):
 
     def render(self):
         listing = self.helper.getContentByCanonical()
-        # Ungeneratorify
-        listing = list(listing)
         return json.dumps(listing)
 
 

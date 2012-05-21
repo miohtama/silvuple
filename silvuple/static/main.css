@@ -19,12 +19,17 @@
 }
 
 
-.view-link {
+.translator-master-content .view-link {
     display: block !important;
 }
 
-.canonical-item .view-link {
+.translator-master-content .canonical-item .view-link {
     font-weight: bold;
+}
+
+.translator-master-content .note {
+    color: #888;
+    font-size: 80%;
 }
 
 #content .translator-master-content a.quick-link,
