@@ -3,17 +3,19 @@
     Override user interface language setting
 
 """
+import logging
 
 from AccessControl import getSecurityManager
-from ZPublisher.interfaces import IPubAfterTraversal
 from zope.component import getUtility, ComponentLookupError
 from Products.CMFCore import permissions
 from Products.CMFCore.interfaces import IContentish, IFolderish
-from five import grok
 from plone.registry.interfaces import IRegistry
 
 from interfaces import IAddonSpecific
 from settings import ISettings
+
+logger = logging.getLogger("silvuple")
+
 
 def find_context(request):
     """Find the context from the request
@@ -26,31 +28,15 @@ def find_context(request):
         context = request.PARENTS[0]
     return context
 
-@grok.subscribe(IPubAfterTraversal)
-def admin_language_negotiator(event):
-    """
-    Event handler which pokes the language after traversing and authentication is done, but before rendering.
-
-    Normally language negotiation happens in LanguageTool.setLanguageBindings() but this is before we have found request["PUBLISHED"]
-    and we know if we are an editor or not.
-    """
-
-    request = event.request
-
-    lang = get_editor_language(request)
-
-    if lang:
-        # Kill it with fire
-        request["LANGUAGE"] = lang
-        tool = request["LANGUAGE_TOOL"]
-        tool.LANGUAGE = lang
-        tool.LANGUAGE_LIST = [lang]
-        tool.DEFAULT_LANGUAGE = lang
 
 def get_editor_language(request):
     """
     Get editor language override if Silvuple is installed.
     """
+
+    cached = getattr(request, "_cached_admin_language", None)
+    if cached:
+        return cached
 
     if not IAddonSpecific.providedBy(request):
         # Add on is not active
@@ -87,7 +73,44 @@ def get_editor_language(request):
 
     if language:
         # Fake new language for all authenticated users
+        request._cached_admin_language = language
         return language
 
     return None
 
+
+def is_editor_language_domain(domain):
+    """
+    Filter to check which gettext domains will get forced to be in english always.
+    """
+    return domain.startswith("plone") or domain.startswith("collective")
+
+
+_unpatched_translate = None
+
+
+def _patched_translate(self, msgid, mapping=None, context=None,
+                  target_language=None, default=None):
+    """ TranslatioDomain.translate() patched for editor language support
+
+    :param context: HTTPRequest object
+    """
+
+    # Override translation language?
+    try:
+        if is_editor_language_domain(self.domain):
+            language = get_editor_language(context)
+            if language:
+                target_language = language
+    except Exception as e:
+        # Some defensive programming here
+        logger.error("Admin language force patch failed")
+        logger.exception(e)
+
+    #print "_patched_translate: %s: %s, %s" % (msgid, self.domain, target_language)
+
+    return _unpatched_translate(self, msgid, mapping, context, target_language, default)
+
+from zope.i18n.translationdomain import TranslationDomain
+_unpatched_translate = TranslationDomain.translate
+TranslationDomain.translate = _patched_translate

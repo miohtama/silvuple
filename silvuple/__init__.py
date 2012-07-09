@@ -7,6 +7,9 @@
 # W0613:  7,15:initialize: Unused argument 'context'
 # pylint: disable=W0613
 
+# Run in monkey-patch
+from silvuple import negotiator
+
 
 def initialize(context):
     """ Zope 2 init code goes here.

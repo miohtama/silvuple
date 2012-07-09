@@ -4,8 +4,8 @@
     xmlns:cmf="http://namespaces.zope.org/cmf"
     xmlns:grok="http://namespaces.zope.org/grok"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"  
-    xmlns:browser="http://namespaces.zope.org/browser"    
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="silvuple">
 
   <include package="five.grok" />
@@ -20,21 +20,19 @@
       name="default"
       title="silvuple"
       directory="profiles/default"
-      description=''
+      description='Translation manager and helper'
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
-  <cmf:registerDirectory name="skins" directory="skins" recursive="True"/>
-
-  <!-- Declare mapping between portal_skins theme name and Zope 3 browser layers --> 
+  <!-- Declare mapping between portal_skins theme name and Zope 3 browser layers -->
   <interface
       interface=".interfaces.IThemeSpecific"
       type="zope.publisher.interfaces.browser.IBrowserSkinType"
       name="silvuple"
       />
 
-  <!-- 
-    Load template overrides using z3c.jbot 
+  <!--
+    Load template overrides using z3c.jbot
   -->
   <include package="z3c.jbot" file="meta.zcml" />
 
