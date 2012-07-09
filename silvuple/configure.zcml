@@ -31,15 +31,4 @@
       name="silvuple"
       />
 
-  <!--
-    Load template overrides using z3c.jbot
-  -->
-  <include package="z3c.jbot" file="meta.zcml" />
-
-  <browser:jbot
-      directory="templates"
-      layer=".interfaces.IAddonSpecific" />
-
-
-
 </configure>
