@@ -1,7 +1,7 @@
 Introduction
 -----------------
 
-Translation manager and helper for `Plone CMS <http://plone.org>` / LinguaPlone sites.
+Translation manager and helper for `Plone CMS <http://plone.org>`_ / LinguaPlone sites.
 
 Features
 ------------
