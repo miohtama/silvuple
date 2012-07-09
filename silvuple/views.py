@@ -9,11 +9,17 @@
 """
 
 
-# Disable unused imports pylint warning as they are here 
+# Disable unused imports pylint warning as they are here
 # here for example purposes
 # W0611: 12,0: Unused import Interface
+# R0201: 75,4:MultiLinguageContentListingHelper.getSettings: Method could be a function
 
-# pylint: disable=W0611
+# XXX: getContentByCanonical() is ugly code and the following must be cleaned up
+
+# R0914:191,4:MultiLinguageContentListingHelper.getContentByCanonical: Too many local variables (17/15)
+# R0912:191,4:MultiLinguageContentListingHelper.getContentByCanonical: Too many branches (20/12)
+
+# pylint: disable=W0611, R0201, R0914, R0912
 
 import json
 
@@ -22,17 +28,15 @@ import json
 # set member, iterate keys and values this is enough
 try:
     from collections import OrderedDict
-except ImportError:    
+except ImportError:
     from odict import odict as OrderedDict
 
 # Zope imports
-from zope.interface import Interface
 from zope.component import getMultiAdapter, ComponentLookupError, getUtility
 from five import grok
 from Products.CMFCore.interfaces import ISiteRoot
 
 
-from plone.app.layout.globals.interfaces import ITools, IPortalState
 from plone.uuid.interfaces import IUUID
 from Products.LinguaPlone.interfaces import ITranslatable
 from plone.registry.interfaces import IRegistry
@@ -54,6 +58,7 @@ var %(name)s = %(json)s;
 </script>
 """
 
+
 def map_language_id(lang):
     """
     Handle neutral (empty) to "neutral" language id transformation
@@ -63,14 +68,14 @@ def map_language_id(lang):
 
     return lang
 
+
 class MultiLinguageContentListingHelper(grok.CodeView):
     """
-    Builds JSON multilingual content out of Plone. 
+    Builds JSON multilingual content out of Plone.
     """
 
     grok.context(ISiteRoot)
     grok.name("multi-lingual-content-listing-helper")
-
 
     def getSettings(self):
         """
@@ -98,16 +103,16 @@ class MultiLinguageContentListingHelper(grok.CodeView):
         Example output::
 
              {
-                u'fi': {u'id' : u'fi', u'flag': u'/++resource++country-flags/fi.gif', u'name': u'Finnish', u'native': u'Suomi'}, 
-                u'de': {u'id' : u'de', u'flag': u'/++resource++country-flags/de.gif', u'name': u'German', u'native': u'Deutsch'}, 
-                u'en': {u'id' : u'en', u'flag': u'/++resource++country-flags/gb.gif', u'name': u'English', u'native': u'English'}, 
+                u'fi': {u'id' : u'fi', u'flag': u'/++resource++country-flags/fi.gif', u'name': u'Finnish', u'native': u'Suomi'},
+                u'de': {u'id' : u'de', u'flag': u'/++resource++country-flags/de.gif', u'name': u'German', u'native': u'Deutsch'},
+                u'en': {u'id' : u'en', u'flag': u'/++resource++country-flags/gb.gif', u'name': u'English', u'native': u'English'},
                 u'ru': {u'id' : u'ru', u'flag': u'/++resource++country-flags/ru.gif', u'name': u'Russian', u'native': u'\u0420\u0443\u0441\u0441\u043a\u0438\u0439'}
               }
         """
         result = OrderedDict()
 
         portal_languages = self.context.portal_languages
-        
+
         # Get barebone language listing from portal_languages tool
         langs = portal_languages.getAvailableLanguages()
 
@@ -133,7 +138,6 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
         return result
 
-
     def shouldTranslate(self, brain):
         """
         Filtering function to check whether content types should appear in the translation list or not
@@ -150,7 +154,6 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
         return brain["portal_type"] in settings.contentTypes
 
-
     def sortContentListing(self, result):
         """
         Sort result listing items by canonical path.
@@ -166,12 +169,11 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
             # First snatch canonical  item for this content
             for lang in entry:
-            
+
                 if lang.get("canonical", False):
                     canonical = lang
 
             return canonical
-
 
         def compare(a, b):
             """
@@ -185,7 +187,6 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                 return 0
 
         result.sort(compare)
-
 
     def getContentByCanonical(self):
         """
@@ -201,7 +202,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                     { language : "ru", available : false }
                 ]
             ]
- 
+
         Not available languages won't get any entries.
         """
 
@@ -209,7 +210,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
         portal_catalog = tools.catalog()
 
-        all_content = portal_catalog(Language = "all")
+        all_content = portal_catalog(Language="all")
 
         # List of UUID -> entry data mappings
         result = OrderedDict()
@@ -217,15 +218,14 @@ class MultiLinguageContentListingHelper(grok.CodeView):
         # Create a dictionary entry populated with default languages,
         # so that languages come always in the same order
         # E.g. {en:{"available":False}}
-        
+
         langs = self.getLanguages()
-        
 
         def get_base_entry():
             """ Item row for all languages, everything set off by default """
             base_entry = OrderedDict()
             for lang in langs:
-                base_entry[lang]= dict(available=False, language=lang, canTranslate=False)
+                base_entry[lang] = dict(available=False, language=lang, canTranslate=False)
             return base_entry
 
         def get_or_create_handle(translatable):
@@ -273,12 +273,12 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
             return translation is not None
 
-        for brain in all_content:           
-            
+        for brain in all_content:
+
             if not self.shouldTranslate(brain):
                 continue
 
-            context = brain.getObject()          
+            context = brain.getObject()
 
             if ITranslatable.providedBy(context):
                 translatable = ITranslatable(context)
@@ -289,15 +289,15 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
             # Data exported to JSON + context object needed for post-processing
             data = dict(
-                canonical = translatable.isCanonical(),
-                title = context.Title(),
-                url = context.absolute_url(),
-                lang = map_language_id(context.Language()),
-                available = True,
-                path = context.absolute_url_path(),
-                context = context                
+                canonical=translatable.isCanonical(),
+                title=context.Title(),
+                url=context.absolute_url(),
+                lang=map_language_id(context.Language()),
+                available=True,
+                path=context.absolute_url_path(),
+                context=context
                 )
-            
+
             entry[map_language_id(context.Language())] = data
 
         # Fill in items which can be translated
@@ -307,7 +307,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
             # First snatch canonical  item for this content
             for lang in entry.values():
-            
+
                 if lang.get("canonical", False):
                     canonical = lang["context"]
 
@@ -326,7 +326,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
         # Convert pre content entries to lists, so that we can guarantee
         # the order of langauges when passing thru JSON
-        result = [ entry.values() for entry in result.values() ]
+        result = [entry.values() for entry in result.values()]
 
         self.sortContentListing(result)
 
@@ -356,7 +356,7 @@ class JSONContentListing(grok.CodeView):
 
 
 class TranslatorMaster(grok.View):
-    """ 
+    """
     Translate content to multiple languages on a single view.
     """
 
@@ -371,7 +371,6 @@ class TranslatorMaster(grok.View):
             messages = IStatusMessage(self.request)
             messages.addStatusMessage(u"Silvuple not configured in Site Setup", type="error")
 
-
     def getJavascriptContextVars(self):
         """
         @return: Python dictionary of settings
@@ -379,13 +378,11 @@ class TranslatorMaster(grok.View):
 
         state = getMultiAdapter((self.context, self.request), name="plone_portal_state")
 
-
         # Create youroptions Javascript object and populate in these variables
         return {
             # Javascript AJAX will call this view to populate the listing
-            "jsonContentLister" : "%s/%s" % (state.portal_url(), getattr(JSONContentListing, "grokcore.component.directive.name"))
+            "jsonContentLister": "%s/%s" % (state.portal_url(), getattr(JSONContentListing, "grokcore.component.directive.name"))
         }
-
 
     def getSetupJavascript(self):
         """
@@ -398,6 +395,6 @@ class TranslatorMaster(grok.View):
         json_snippet = json.dumps(settings)
 
         # Use Python string template facility to produce the code
-        html = SETTINGS_TEMPLATE % { "name" : "silvupleOptions", "json" : json_snippet }
+        html = SETTINGS_TEMPLATE % {"name": "silvupleOptions", "json": json_snippet}
 
-        return html        
+        return html

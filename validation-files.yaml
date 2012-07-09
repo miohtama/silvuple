@@ -2,5 +2,4 @@
 all: |
     *
     !RE:.*\/\..*|^\..*
-    !static/transparency.js
-    
+    !silvuple/static/transparency.js

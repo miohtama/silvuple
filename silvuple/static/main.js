@@ -5,12 +5,14 @@
  /*global window, document, console*/
 
 (function($) {
-     
+
     "use strict";
 
     // http://opensourcehacker.com/2011/03/15/everyone-loves-and-hates-console-log/
     // Ignore console on platforms where it is not available
-    if (typeof(window.console) == "undefined") { console = {}; console.log = console.warn = console.error = function(a) {}; }
+    if (typeof(window.console) == "undefined") {
+        window.console = {}; console.log = console.warn = console.error = function(a) {};
+    }
 
     /**
      * A dynamically populated table state machine switcher.
@@ -21,7 +23,7 @@
      *
      */
     function renderContentListing(loading, failureMessage, items) {
-       
+
         var data = {
             items : items,
             loadingStatus : loading,
@@ -40,7 +42,7 @@
 
             // Load failed
             failure : {
-                style : function() { return this.failureMessage ? visible : invisible; }
+                style : function() { return this.failureMessage ? visible : invisible; }
             },
 
             // Load in progress
@@ -50,7 +52,7 @@
 
             // Got the content
             listing : {
-                style : function() { return this.items ? visible : invisible; }
+                style : function() { return this.items ? visible : invisible; }
             },
 
             // Format one entry in the listing
@@ -89,7 +91,7 @@
                         for(i=0; i<this.length; i++) {
 
                             var item = this[i];
-                            
+
                             var td = $("<td>");
 
                             // Different elements we can generate
@@ -134,7 +136,7 @@
                                 note = $("<p>");
                                 note.text(item.path);
                                 note.addClass("note");
-                                
+
                                 // TODO: translator manager page does not support
                                 // AJAXy actions because it consists of 3 forms
                                 manageLink = $("<a>");
@@ -149,7 +151,7 @@
                             if(note) {
                                 td.append(note);
                             }
-                            
+
                             if(editLink) {
                                 td.append(editLink);
                             }
@@ -234,11 +236,11 @@
             // (alternative extract error response from the HTTP reponse)
 
             // Don't pass undefined error message
-            var message = jqXHR.statusText || textStatus;
+            var message = jqXHR.statusText || textStatus;
             renderContentListing(false, message);
         }
 
-        if(!window.silvupleOptions || !window.silvupleOptions.jsonContentLister) {
+        if(!window.silvupleOptions || !window.silvupleOptions.jsonContentLister) {
             throw new Error("Global Silvuple options object has not been initialized");
         }
 
