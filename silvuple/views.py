@@ -316,7 +316,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             # Data exported to JSON + context object needed for post-processing
             data = dict(
                 canonical=translatable.isCanonical(),
-                title=context.Title(),
+                title=context.title_or_id(),
                 url=context.absolute_url(),
                 lang=map_language_id(context.Language()),
                 available=True,
