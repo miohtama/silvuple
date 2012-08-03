@@ -4,6 +4,12 @@ Changelog
 1.0 (unreleased)
 -------------------
 
+- Basque and spanish translations
+  [erral]
+
+- i18nize the product
+  [erral]
+
 - Log errors instead of throwing RuntimeError
   [erral]
 
