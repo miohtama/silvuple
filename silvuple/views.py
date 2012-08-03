@@ -305,7 +305,13 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                 log.info('Content is not translatable: %s' % context.absolute_url())                
                 continue
 
-            entry = get_or_create_handle(translatable)
+            try:
+                entry = get_or_create_handle(translatable)
+            except RuntimeError:
+                from logging import getLogger
+                log = getLogger('silvuple.views.getContentByCanonical')
+                log.info('Item has no UUID: %s' & translatable.absolute_url())
+                continue
 
             # Data exported to JSON + context object needed for post-processing
             data = dict(
