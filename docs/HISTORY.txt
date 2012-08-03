@@ -1,0 +1,20 @@
+Changelog
+=========
+
+1.0 (unreleased)
+-------------------
+
+- Basque and spanish translations
+  [erral]
+
+- i18nize the product
+  [erral]
+
+- Log errors instead of throwing RuntimeError
+  [erral]
+
+- Changes to work in a given context instead of site root
+  [erral]
+
+- Initial implementation
+  [miohtama]

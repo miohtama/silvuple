@@ -10,6 +10,10 @@
 # Run in monkey-patch
 from silvuple import negotiator
 
+from zope.i18nmessageid import MessageFactory
+silvupleMessageFactory = MessageFactory('silvuple')
+
+
 
 def initialize(context):
     """ Zope 2 init code goes here.

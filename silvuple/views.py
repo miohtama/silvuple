@@ -35,7 +35,8 @@ except ImportError:
 from zope.component import getMultiAdapter, ComponentLookupError, getUtility
 from five import grok
 from Products.CMFCore.interfaces import ISiteRoot
-
+from zope.interface import Interface
+from Acquisition import aq_inner, aq_parent
 
 from plone.uuid.interfaces import IUUID
 from Products.LinguaPlone.interfaces import ITranslatable
@@ -74,7 +75,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
     Builds JSON multilingual content out of Plone.
     """
 
-    grok.context(ISiteRoot)
+    grok.context(Interface)
     grok.name("multi-lingual-content-listing-helper")
 
     def getSettings(self):
@@ -109,9 +110,11 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                 u'ru': {u'id' : u'ru', u'flag': u'/++resource++country-flags/ru.gif', u'name': u'Russian', u'native': u'\u0420\u0443\u0441\u0441\u043a\u0438\u0439'}
               }
         """
+        context = aq_inner(self.context)
         result = OrderedDict()
 
-        portal_languages = self.context.portal_languages
+        portal = getMultiAdapter((context, self.request), name='plone_portal_state').portal()
+        portal_languages = portal.portal_languages
 
         # Get barebone language listing from portal_languages tool
         langs = portal_languages.getAvailableLanguages()
@@ -205,12 +208,23 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
         Not available languages won't get any entries.
         """
-
-        tools = getMultiAdapter((self.context, self.request), name="plone_tools")
+        settings = self.getSettings()
+        context = aq_inner(self.context)
+        tools = getMultiAdapter((context, self.request), name="plone_tools")
 
         portal_catalog = tools.catalog()
 
-        all_content = portal_catalog(Language="all")
+        all_content = []
+
+        if ITranslatable.providedBy(context):
+            for lang, item in context.getTranslations(review_state=False).items():
+                all_content += portal_catalog(Language="all",
+                                              path='/'.join(item.getPhysicalPath()),
+                                              portal_type=settings.contentTypes)
+        else:
+            all_content = portal_catalog(Language="all",
+                                         path='/'.join(context.getPhysicalPath()),
+                                         portal_type=settings.contentTypes)
 
         # List of UUID -> entry data mappings
         result = OrderedDict()
@@ -255,7 +269,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
             :return: True if the item can be translated
             """
-            parent = context.aq_parent
+            parent = aq_parent(context)
 
             if ISiteRoot.providedBy(parent):
                 return True
@@ -267,7 +281,10 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             if ITranslatable.providedBy(parent):
                 translatable = ITranslatable(parent)
             else:
-                raise RuntimeError("Not translatable parent: %s" % parent)
+                from logging import getLogger
+                log = getLogger('silvuple.views.can_translate')
+                log.info('Parent is not translatable: %s' % parent.absolute_url())
+                return False 
 
             translation = translatable.getTranslation(language)
 
@@ -283,14 +300,23 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             if ITranslatable.providedBy(context):
                 translatable = ITranslatable(context)
             else:
-                raise RuntimeError("Not translatable content: %s" % context)
+                from logging import getLogger
+                log = getLogger('silvuple.views.can_translate')
+                log.info('Content is not translatable: %s' % context.absolute_url())                
+                continue
 
-            entry = get_or_create_handle(translatable)
+            try:
+                entry = get_or_create_handle(translatable)
+            except RuntimeError:
+                from logging import getLogger
+                log = getLogger('silvuple.views.getContentByCanonical')
+                log.info('Item has no UUID: %s' & translatable.absolute_url())
+                continue
 
             # Data exported to JSON + context object needed for post-processing
             data = dict(
                 canonical=translatable.isCanonical(),
-                title=context.Title(),
+                title=context.title_or_id(),
                 url=context.absolute_url(),
                 lang=map_language_id(context.Language()),
                 available=True,
@@ -344,11 +370,12 @@ class JSONContentListing(grok.CodeView):
     Called from main.js to populate the content listing view.
     """
 
-    grok.context(ISiteRoot)
+    grok.context(Interface)
     grok.name("translator-master-json")
 
     def update(self):
-        self.helper = MultiLinguageContentListingHelper(self.context, self.request)
+        context = aq_inner(self.context)
+        self.helper = MultiLinguageContentListingHelper(context, self.request)
 
     def render(self):
         listing = self.helper.getContentByCanonical()
@@ -360,12 +387,13 @@ class TranslatorMaster(grok.View):
     Translate content to multiple languages on a single view.
     """
 
-    grok.context(ISiteRoot)
+    grok.context(Interface)
     grok.name("translator-master")
     grok.require("cmf.ModifyPortalContent")
 
     def update(self):
-        self.helper = MultiLinguageContentListingHelper(self.context, self.request)
+        context = aq_inner(self.context)
+        self.helper = MultiLinguageContentListingHelper(context, self.request)
 
         if not self.helper.getSettings():
             messages = IStatusMessage(self.request)
@@ -376,12 +404,11 @@ class TranslatorMaster(grok.View):
         @return: Python dictionary of settings
         """
 
-        state = getMultiAdapter((self.context, self.request), name="plone_portal_state")
-
         # Create youroptions Javascript object and populate in these variables
+        context = aq_inner(self.context)
         return {
             # Javascript AJAX will call this view to populate the listing
-            "jsonContentLister": "%s/%s" % (state.portal_url(), getattr(JSONContentListing, "grokcore.component.directive.name"))
+            "jsonContentLister": "%s/%s" % (context.absolute_url(), getattr(JSONContentListing, "grokcore.component.directive.name"))
         }
 
     def getSetupJavascript(self):

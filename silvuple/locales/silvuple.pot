@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2012-08-03 10:13+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
+
+#: ./settings.py:24
+msgid "Editor language"
+msgstr ""
+
+#: ./settings.py:29
+msgid "Enabled content types"
+msgstr ""
+
+#: ./settings.py:41
+msgid "Silvuple settings"
+msgstr ""
+
+#: ./settings.py:25
+msgid "Type two letter language code and admins always use this language"
+msgstr ""
+
+#: ./settings.py:30
+msgid "Which content types appear on translation master page"
+msgstr ""
+
+#. Default: "Manage your translated content below. Dashed out items must have their parents translated first before the items itself can be translated."
+#: ./templates/translatormaster.pt:17
+msgid "description_translator_master"
+msgstr ""
+
+#. Default: "Translator Master"
+#: ./templates/translatormaster.pt:15
+msgid "heading_translator_master"
+msgstr ""
+
+#. Default: "Error loading content data"
+#: ./templates/translatormaster.pt:34
+msgid "label_error_loading_content"
+msgstr ""
+
+#. Default: "Loading content"
+#: ./templates/translatormaster.pt:24
+msgid "loading_content"
+msgstr ""
+
