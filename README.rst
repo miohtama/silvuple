@@ -11,10 +11,13 @@ Features
   the control panel.
 
 * **Translations Manager**: A menu item for the admins in the user menu. This allows you to batch enter translated content
-  and quickly get overview what contents still needs to be translated.
+  and quickly get overview what contents still needs to be translated. 
 
 Notes
 ------
+
+Admin language behavior
+=======================
 
 By default the forced admin language is handled by overriding language when doing look-ups for ``plone``
 and ``collective.*`` gettext translation domains. The logic here is that these language strings
@@ -24,9 +27,19 @@ The actual language is not switched in any point: changing the language itself w
 site behavior differense in folder contents, search and other content listing views making
 administrative tasks impossible.
 
-Author
+Translation manager
+====================
+
+The *Translation Manager* is effective in the  current folder and all its childred: 
+if you have a site with a lot of content you might want to invoke
+*Translation Manager* one folder by at the time and not in the site root due
+to speed issues of locating translated content.
+
+Authors
 --------
 
 `Mikko Ohtamaa <http://opensourcehacker.com>`_
+
+`Mikel Larreategi <http://eibar.org/blogak/erral>`_ 
 
 Special thanks for Andreas Jung for providing support with the code.
