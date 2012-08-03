@@ -281,7 +281,10 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             if ITranslatable.providedBy(parent):
                 translatable = ITranslatable(parent)
             else:
-                raise RuntimeError("Not translatable parent: %s" % parent)
+                from logging import getLogger
+                log = getLogger('silvuple.views.can_translate')
+                log.info('Parent is not translatable: %s' % parent.absolute_url())
+                return False 
 
             translation = translatable.getTranslation(language)
 
@@ -297,7 +300,10 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             if ITranslatable.providedBy(context):
                 translatable = ITranslatable(context)
             else:
-                raise RuntimeError("Not translatable content: %s" % context)
+                from logging import getLogger
+                log = getLogger('silvuple.views.can_translate')
+                log.info('Content is not translatable: %s' % context.absolute_url())                
+                continue
 
             entry = get_or_create_handle(translatable)
 
