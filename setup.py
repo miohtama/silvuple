@@ -13,10 +13,13 @@
 """
 
 from setuptools import setup
+import os
 
 setup(name = "silvuple",
     version = "0.0",
     description = "Translation manager for Plone / LinguaPlone websites",
+    long_description=open("README.rst").read() + "\n" +
+                     open(os.path.join("docs", "HISTORY.txt")).read(),
     author = "Mikko Ohtamaa",
     author_email = "mikko@opensourcehacker.com",
     url = "http://opensourcehacker.com",
