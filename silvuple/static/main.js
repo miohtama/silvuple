@@ -125,6 +125,10 @@
                                 editLink.addClass("edit-link quick-link");
                                 editLink.text("Edit");
                                 editLink.attr("href", item.url + "/edit");
+
+                                note = $("<p>");
+                                note.text(item.path);
+                                note.addClass("note");                                
                             }
 
                             // Mark master language copy with
