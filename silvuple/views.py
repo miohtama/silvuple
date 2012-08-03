@@ -36,7 +36,7 @@ from zope.component import getMultiAdapter, ComponentLookupError, getUtility
 from five import grok
 from Products.CMFCore.interfaces import ISiteRoot
 from zope.interface import Interface
-from Acquisition import aq_inner
+from Acquisition import aq_inner, aq_parent
 
 from plone.uuid.interfaces import IUUID
 from Products.LinguaPlone.interfaces import ITranslatable
@@ -110,9 +110,10 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                 u'ru': {u'id' : u'ru', u'flag': u'/++resource++country-flags/ru.gif', u'name': u'Russian', u'native': u'\u0420\u0443\u0441\u0441\u043a\u0438\u0439'}
               }
         """
+        context = aq_inner(self.context)
         result = OrderedDict()
 
-        portal_languages = self.context.portal_languages
+        portal_languages = context.portal_languages
 
         # Get barebone language listing from portal_languages tool
         langs = portal_languages.getAvailableLanguages()
@@ -207,20 +208,21 @@ class MultiLinguageContentListingHelper(grok.CodeView):
         Not available languages won't get any entries.
         """
         settings = self.getSettings()
-        tools = getMultiAdapter((self.context, self.request), name="plone_tools")
+        context = aq_inner(self.context)
+        tools = getMultiAdapter((context, self.request), name="plone_tools")
 
         portal_catalog = tools.catalog()
 
         all_content = []
 
-        if ITranslatable.providedBy(self.context):
-            for lang, item in self.context.getTranslations(review_state=False).items():
+        if ITranslatable.providedBy(context):
+            for lang, item in context.getTranslations(review_state=False).items():
                 all_content += portal_catalog(Language="all",
                                               path='/'.join(item.getPhysicalPath()),
                                               portal_type=settings.contentTypes)
         else:
             all_content = portal_catalog(Language="all",
-                                         path='/'.join(self.context.getPhysicalPath()),
+                                         path='/'.join(context.getPhysicalPath()),
                                          portal_type=settings.contentTypes)
 
         # List of UUID -> entry data mappings
@@ -266,7 +268,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
             :return: True if the item can be translated
             """
-            parent = context.aq_parent
+            parent = aq_parent(context)
 
             if ISiteRoot.providedBy(parent):
                 return True
@@ -359,7 +361,8 @@ class JSONContentListing(grok.CodeView):
     grok.name("translator-master-json")
 
     def update(self):
-        self.helper = MultiLinguageContentListingHelper(self.context, self.request)
+        context = aq_inner(self.context)
+        self.helper = MultiLinguageContentListingHelper(context, self.request)
 
     def render(self):
         listing = self.helper.getContentByCanonical()
@@ -376,7 +379,8 @@ class TranslatorMaster(grok.View):
     grok.require("cmf.ModifyPortalContent")
 
     def update(self):
-        self.helper = MultiLinguageContentListingHelper(self.context, self.request)
+        context = aq_inner(self.context)
+        self.helper = MultiLinguageContentListingHelper(context, self.request)
 
         if not self.helper.getSettings():
             messages = IStatusMessage(self.request)
@@ -388,9 +392,10 @@ class TranslatorMaster(grok.View):
         """
 
         # Create youroptions Javascript object and populate in these variables
+        context = aq_inner(self.context)
         return {
             # Javascript AJAX will call this view to populate the listing
-            "jsonContentLister": "%s/%s" % (self.context.absolute_url(), getattr(JSONContentListing, "grokcore.component.directive.name"))
+            "jsonContentLister": "%s/%s" % (context.absolute_url(), getattr(JSONContentListing, "grokcore.component.directive.name"))
         }
 
     def getSetupJavascript(self):
