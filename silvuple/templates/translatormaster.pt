@@ -2,7 +2,8 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      metal:use-macro="context/main_template/macros/master">
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="silvuple">
 
 
     <metal:block fill-slot="javascript_head_slot">
@@ -11,16 +12,16 @@
 
     <metal:block fill-slot="main">
 
-        <h1 class="documentFirstHeading">Translator Master</h1> 
+        <h1 class="documentFirstHeading" i18n:translate="heading_translator_master">Translator Master</h1> 
 
-        <p>Manage your translated content below. Dashed out items must have their parents translated first before the items itself can be translated.</p>
+        <p i18n:translate="description_translator_master">Manage your translated content below. Dashed out items must have their parents translated first before the items itself can be translated.</p>
 
         <div id="content-core">
 
             <div class="translator-master-loader">
 
                 <div class="loading" style="display: none">
-                    <p>
+                    <p i18n:translate="loading_content">
                         Loading content
                     </p>
                     <p>
@@ -30,7 +31,7 @@
 
                 <div class="failure" style="display: none">
                     <dl class="portalMessage error">
-                        <dt>Error loading content data</dt>
+                        <dt i18n:translate="label_error_loading_content">Error loading content data</dt>
                         <dd data-bind="failureMessage"></dd>
                     </dl>
                 </div>
