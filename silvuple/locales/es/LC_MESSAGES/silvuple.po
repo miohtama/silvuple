@@ -1,10 +1,10 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: silvuple\n"
 "POT-Creation-Date: 2012-08-03 10:13+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2012-08-03 12:16+0100\n"
+"Last-Translator: Mikel Larreategi <mlarreategi@codesyntax.com>\n"
+"Language-Team: es <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,44 +13,45 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
+"X-Poedit-Language: Spanish\n"
 
 #: ./settings.py:24
 msgid "Editor language"
-msgstr ""
+msgstr "Idioma del editor"
 
 #: ./settings.py:29
 msgid "Enabled content types"
-msgstr ""
+msgstr "Tipos de objeto activados"
 
 #: ./settings.py:41
 msgid "Silvuple settings"
-msgstr ""
+msgstr "Configuración de Silvuple"
 
 #: ./settings.py:25
 msgid "Type two letter language code and admins always use this language"
-msgstr ""
+msgstr "Escriba el código del idioma que quiere que se utilice para el administrador"
 
 #: ./settings.py:30
 msgid "Which content types appear on translation master page"
-msgstr ""
+msgstr "Elija qué tipos de objeto se mostrarán en la pantalla maestra de traducciones"
 
 #. Default: "Manage your translated content below. Dashed out items must have their parents translated first before the items itself can be translated."
 #: ./templates/translatormaster.pt:17
 msgid "description_translator_master"
-msgstr ""
+msgstr "Gestione su contenido traducido. Los elementos con guiones (--) indican que alguno de sus ancestros no está traducido, por lo que deberá traducir primero aquéllos antes de traducir éste."
 
 #. Default: "Translator Master"
 #: ./templates/translatormaster.pt:15
 msgid "heading_translator_master"
-msgstr ""
+msgstr "Pantalla Maestra de Traducciones"
 
 #. Default: "Error loading content data"
 #: ./templates/translatormaster.pt:34
 msgid "label_error_loading_content"
-msgstr ""
+msgstr "Ha ocurrido un error al cargar los datos"
 
 #. Default: "Loading content"
 #: ./templates/translatormaster.pt:24
 msgid "loading_content"
-msgstr ""
+msgstr "Cargando contenido. Espere por favor."
 
