@@ -113,7 +113,8 @@ class MultiLinguageContentListingHelper(grok.CodeView):
         context = aq_inner(self.context)
         result = OrderedDict()
 
-        portal_languages = context.portal_languages
+        portal = getMultiAdapter((context, self.request), name='plone_portal_state').portal()
+        portal_languages = portal.portal_languages
 
         # Get barebone language listing from portal_languages tool
         langs = portal_languages.getAvailableLanguages()
