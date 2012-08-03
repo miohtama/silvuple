@@ -35,7 +35,8 @@ except ImportError:
 from zope.component import getMultiAdapter, ComponentLookupError, getUtility
 from five import grok
 from Products.CMFCore.interfaces import ISiteRoot
-
+from zope.interface import Interface
+from Acquisition import aq_inner
 
 from plone.uuid.interfaces import IUUID
 from Products.LinguaPlone.interfaces import ITranslatable
@@ -74,7 +75,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
     Builds JSON multilingual content out of Plone.
     """
 
-    grok.context(ISiteRoot)
+    grok.context(Interface)
     grok.name("multi-lingual-content-listing-helper")
 
     def getSettings(self):
@@ -205,12 +206,22 @@ class MultiLinguageContentListingHelper(grok.CodeView):
 
         Not available languages won't get any entries.
         """
-
+        settings = self.getSettings()
         tools = getMultiAdapter((self.context, self.request), name="plone_tools")
 
         portal_catalog = tools.catalog()
 
-        all_content = portal_catalog(Language="all")
+        all_content = []
+
+        if ITranslatable.providedBy(self.context):
+            for lang, item in self.context.getTranslations(review_state=False).items():
+                all_content += portal_catalog(Language="all",
+                                              path='/'.join(item.getPhysicalPath()),
+                                              portal_type=settings.contentTypes)
+        else:
+            all_content = portal_catalog(Language="all",
+                                         path='/'.join(self.context.getPhysicalPath()),
+                                         portal_type=settings.contentTypes)
 
         # List of UUID -> entry data mappings
         result = OrderedDict()
@@ -344,7 +355,7 @@ class JSONContentListing(grok.CodeView):
     Called from main.js to populate the content listing view.
     """
 
-    grok.context(ISiteRoot)
+    grok.context(Interface)
     grok.name("translator-master-json")
 
     def update(self):
@@ -360,7 +371,7 @@ class TranslatorMaster(grok.View):
     Translate content to multiple languages on a single view.
     """
 
-    grok.context(ISiteRoot)
+    grok.context(Interface)
     grok.name("translator-master")
     grok.require("cmf.ModifyPortalContent")
 
@@ -376,12 +387,10 @@ class TranslatorMaster(grok.View):
         @return: Python dictionary of settings
         """
 
-        state = getMultiAdapter((self.context, self.request), name="plone_portal_state")
-
         # Create youroptions Javascript object and populate in these variables
         return {
             # Javascript AJAX will call this view to populate the listing
-            "jsonContentLister": "%s/%s" % (state.portal_url(), getattr(JSONContentListing, "grokcore.component.directive.name"))
+            "jsonContentLister": "%s/%s" % (self.context.absolute_url(), getattr(JSONContentListing, "grokcore.component.directive.name"))
         }
 
     def getSetupJavascript(self):
