@@ -16,7 +16,8 @@ from plone.directives import form
 from plone.app.registry.browser.controlpanel import RegistryEditForm
 from plone.app.registry.browser.controlpanel import ControlPanelFormWrapper
 
-from silvuple import silvupleMessageFactory as _
+from silvuple.i18n import silvupleMessageFactory as _
+
 
 class ISettings(form.Schema):
     """ Define settings data structure """
