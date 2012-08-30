@@ -6,6 +6,13 @@
 
 from zope import schema
 from five import grok
+
+# grok CodeView is now View
+try:
+    from five.grok import CodeView as View
+except ImportError:
+    from five.grok import View
+
 from Products.CMFCore.interfaces import ISiteRoot
 
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
@@ -42,7 +49,7 @@ class SettingsEditForm(RegistryEditForm):
     label = _(u"Silvuple settings")
 
 
-class SettingsView(grok.CodeView):
+class SettingsView(View):
     """
 
     """

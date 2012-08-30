@@ -31,6 +31,12 @@ try:
 except ImportError:
     from odict import odict as OrderedDict
 
+# grok CodeView is now View
+try:
+    from five.grok import CodeView as View
+except ImportError:
+    from five.grok import View
+
 # Zope imports
 from zope.component import getMultiAdapter, ComponentLookupError, getUtility
 from five import grok
@@ -70,7 +76,7 @@ def map_language_id(lang):
     return lang
 
 
-class MultiLinguageContentListingHelper(grok.CodeView):
+class MultiLinguageContentListingHelper(View):
     """
     Builds JSON multilingual content out of Plone.
     """
@@ -365,7 +371,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
         return ""
 
 
-class JSONContentListing(grok.CodeView):
+class JSONContentListing(View):
     """
     Called from main.js to populate the content listing view.
     """
@@ -382,7 +388,7 @@ class JSONContentListing(grok.CodeView):
         return json.dumps(listing)
 
 
-class TranslatorMaster(grok.View):
+class TranslatorMaster(View):
     """
     Translate content to multiple languages on a single view.
     """
