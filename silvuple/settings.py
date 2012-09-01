@@ -55,6 +55,7 @@ class SettingsView(View):
     """
     grok.name("silvuple-settings")
     grok.context(ISiteRoot)
+    grok.require("cmf.ManagePortal")
 
     def render(self):
         view_factor = layout.wrap_form(SettingsEditForm, ControlPanelFormWrapper)
