@@ -32,9 +32,9 @@ msgstr "Gérer les traductions"
 msgid "Silvuple settings"
 msgstr "Paramètres Silvuple"
 
-# #. Default: "Translation Master"
-# msgid "Translation Master"
-# msgstr "Gestion des traductions"
+#. Default: "Translation Master"
+msgid "Translation Master"
+msgstr "Gestion des traductions"
 
 #: ./settings.py:33
 msgid "Type two letter language code and admins always use this language"
