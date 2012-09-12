@@ -4,6 +4,12 @@ Changelog
 1.0 (unreleased)
 -------------------
 
+- French translation
+  [laulaz]
+
+- Fixes (grok CodeView is now View, protect settings and other minor things)
+  [laulaz]
+
 - Basque and spanish translations
   [erral]
 
