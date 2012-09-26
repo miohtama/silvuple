@@ -87,7 +87,7 @@ def is_editor_language_domain(domain):
     """
     Filter to check which gettext domains will get forced to be in english always.
     """
-    return domain.startswith("plone") or domain.startswith("collective")
+    return domain.startswith("plone") or domain.startswith("collective") or domain == "linguaplone"
 
 
 _unpatched_translate = None
