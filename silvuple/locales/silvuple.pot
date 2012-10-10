@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-08-03 10:13+0000\n"
+"POT-Creation-Date: 2012-08-30 11:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,25 +12,33 @@ msgstr ""
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: DOMAIN\n"
+"Domain: silvuple\n"
 
-#: ./settings.py:24
+#: ./settings.py:32
 msgid "Editor language"
 msgstr ""
 
-#: ./settings.py:29
+#: ./settings.py:37
 msgid "Enabled content types"
 msgstr ""
 
-#: ./settings.py:41
+#: ./profiles/default/actions.xml
+msgid "Manage Translations"
+msgstr ""
+
+#: ./settings.py:49
 msgid "Silvuple settings"
 msgstr ""
 
-#: ./settings.py:25
+#. Default: "Translation Master"
+msgid "Translation Master"
+msgstr ""
+
+#: ./settings.py:33
 msgid "Type two letter language code and admins always use this language"
 msgstr ""
 
-#: ./settings.py:30
+#: ./settings.py:38
 msgid "Which content types appear on translation master page"
 msgstr ""
 
@@ -39,9 +47,10 @@ msgstr ""
 msgid "description_translator_master"
 msgstr ""
 
-#. Default: "Translator Master"
+#. Default: "Translation Master"
+#: ./profiles/default/actions.xml
 #: ./templates/translatormaster.pt:15
-msgid "heading_translator_master"
+msgid "heading_translation_master"
 msgstr ""
 
 #. Default: "Error loading content data"
