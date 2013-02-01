@@ -4,6 +4,12 @@ Changelog
 1.0 (unreleased)
 -------------------
 
+- Italian translation
+  [giacomos]
+
+- Added missing dependency to Products.LinguaPlone
+  [giacomos]
+
 - French translation
   [laulaz]
 
