@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: silvuple\n"
-"POT-Creation-Date: 2012-08-03 10:13+0000\n"
+"POT-Creation-Date: 2012-12-05 23:37+0000\n"
 "PO-Revision-Date: 2012-08-03 12:16+0100\n"
 "Last-Translator: Mikel Larreategi <mlarreategi@codesyntax.com>\n"
 "Language-Team: es <es@li.org>\n"
@@ -12,26 +12,34 @@ msgstr ""
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: DOMAIN\n"
+"Domain: silvuple\n"
 "X-Poedit-Language: Spanish\n"
 
-#: ./settings.py:24
+#: ./settings.py:32
 msgid "Editor language"
 msgstr "Idioma del editor"
 
-#: ./settings.py:29
+#: ./settings.py:37
 msgid "Enabled content types"
 msgstr "Tipos de objeto activados"
 
-#: ./settings.py:41
+#: ./profiles/default/actions.xml
+msgid "Manage Translations"
+msgstr ""
+
+#: ./settings.py:49
 msgid "Silvuple settings"
 msgstr "Configuración de Silvuple"
 
-#: ./settings.py:25
+#. Default: "Translation Master"
+msgid "Translation Master"
+msgstr "Pantalla Maestra de Traducciones"
+
+#: ./settings.py:33
 msgid "Type two letter language code and admins always use this language"
 msgstr "Escriba el código del idioma que quiere que se utilice para el administrador"
 
-#: ./settings.py:30
+#: ./settings.py:38
 msgid "Which content types appear on translation master page"
 msgstr "Elija qué tipos de objeto se mostrarán en la pantalla maestra de traducciones"
 
@@ -40,9 +48,10 @@ msgstr "Elija qué tipos de objeto se mostrarán en la pantalla maestra de tradu
 msgid "description_translator_master"
 msgstr "Gestione su contenido traducido. Los elementos con guiones (--) indican que alguno de sus ancestros no está traducido, por lo que deberá traducir primero aquéllos antes de traducir éste."
 
-#. Default: "Translator Master"
+#. Default: "Translation Master"
+#: ./profiles/default/actions.xml
 #: ./templates/translatormaster.pt:15
-msgid "heading_translator_master"
+msgid "heading_translation_master"
 msgstr "Pantalla Maestra de Traducciones"
 
 #. Default: "Error loading content data"

@@ -1,19 +1,16 @@
 <?xml version="1.0"?>
 <object
-    name="portal_controlpanel"
-    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    i18n:domain="my.package">
+    name="portal_controlpanel">
 
     <configlet
-        title="Silvuple Settings"
+        title="Silvuple"
         action_id="silvuple.settings"
         appId="silvuple"
         category="Products"
         condition_expr=""
         url_expr="string:${portal_url}/@@silvuple-settings"
         icon_expr=""
-        visible="True"
-        i18n:attributes="title">
+        visible="True">
             <permission>Manage portal</permission>
     </configlet>
 

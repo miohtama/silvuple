@@ -12,7 +12,7 @@
 
     <metal:block fill-slot="main">
 
-        <h1 class="documentFirstHeading" i18n:translate="heading_translator_master">Translator Master</h1> 
+        <h1 class="documentFirstHeading" i18n:translate="heading_translation_master">Translation Master</h1> 
 
         <p i18n:translate="description_translator_master">Manage your translated content below. Dashed out items must have their parents translated first before the items itself can be translated.</p>
 
