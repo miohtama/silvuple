@@ -22,6 +22,7 @@
 # pylint: disable=W0611, R0201, R0914, R0912
 
 import json
+from logging import getLogger
 
 # Python 2.6 compatible ordered dict
 # NOTE: API is not 1:1, but for normal dict access of
@@ -58,6 +59,8 @@ SETTINGS_TEMPLATE = u"""
 var %(name)s = %(json)s;
 </script>
 """
+
+logger = getLogger("silvuple")
 
 
 def map_language_id(lang):
@@ -268,7 +271,11 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             """ Check if required parent translations are in place so that we can translate this item
 
             :return: True if the item can be translated
+
             """
+
+            assert context is not None
+
             parent = aq_parent(context)
 
             if ISiteRoot.providedBy(parent):
@@ -283,8 +290,12 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             else:
                 from logging import getLogger
                 log = getLogger('silvuple.views.can_translate')
-                log.info('Parent is not translatable: %s' % parent.absolute_url())
-                return False 
+                if parent:
+                    log.info('Parent is not translatable: %s' % parent.absolute_url())
+                else:
+                    log.error('Cannot translate language: %s, no parent for %s' % (language, context.absolute_url()))
+
+                return False
 
             translation = translatable.getTranslation(language)
 
@@ -302,7 +313,7 @@ class MultiLinguageContentListingHelper(grok.CodeView):
             else:
                 from logging import getLogger
                 log = getLogger('silvuple.views.can_translate')
-                log.info('Content is not translatable: %s' % context.absolute_url())                
+                log.info('Content is not translatable: %s' % context.absolute_url())
                 continue
 
             try:
@@ -340,6 +351,10 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                 # Do not leak out to JSON serialization
                 lang["context"] = None
 
+            if not canonical:
+                logger.warn("No canonical content for %s" % entry)
+                continue
+
             # Then populate untranslated languages
             for lang in entry.values():
                 if not lang["available"]:
@@ -347,8 +362,12 @@ class MultiLinguageContentListingHelper(grok.CodeView):
                     lang_code = lang["language"]
 
                     lang["canTranslate"] = can_translate(canonical, lang_code)
-                    # Point to LinguaPlone Translate into... form
-                    lang["url"] = "%s/@@translate?newlanguage=%s" % (canonical.absolute_url(), lang_code)
+
+                    if canonical:
+                        # Point to LinguaPlone Translate into... form
+                        lang["url"] = "%s/@@translate?newlanguage=%s" % (canonical.absolute_url(), lang_code)
+                    else:
+                        lang["url"] = "#"
 
         # Convert pre content entries to lists, so that we can guarantee
         # the order of langauges when passing thru JSON
