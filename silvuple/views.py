@@ -312,7 +312,12 @@ class MultiLinguageContentListingHelper(View):
             if not self.shouldTranslate(brain):
                 continue
 
-            context = brain.getObject()
+            try:
+                context = brain.getObject()
+            except Exception as e:
+                logger.error("Could not load brain %s" % brain.getURL())
+                logger.exception(e)
+                continue
 
             if ITranslatable.providedBy(context):
                 translatable = ITranslatable(context)
