@@ -67,4 +67,3 @@ def get_editor_language(request):
         return None
 
     return FORCED_LANGUAGE
-
