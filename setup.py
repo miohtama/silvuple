@@ -2,7 +2,7 @@
 
     Declare a Python package silvuple
 
-    See 
+    See
 
     * http://wiki.python.org/moin/Distutils/Tutorial
 
@@ -15,15 +15,15 @@
 from setuptools import setup
 import os
 
-setup(name = "silvuple",
+setup(name="silvuple",
     version='1.3.dev0',
-    description = "Translation manager for Plone / LinguaPlone websites",
+    description="Translation manager for Plone / LinguaPlone websites",
     long_description=open("README.rst").read() + "\n" +
                      open(os.path.join("docs", "HISTORY.txt")).read(),
-    author = "Mikko Ohtamaa",
-    author_email = "mikko@opensourcehacker.com",
-    url = "http://opensourcehacker.com",
-    install_requires = [
+    author="Mikko Ohtamaa",
+    author_email="mikko@opensourcehacker.com",
+    url="http://opensourcehacker.com",
+    install_requires=[
         "Plone",
         "Products.LinguaPlone",
         "five.grok",
@@ -32,17 +32,17 @@ setup(name = "silvuple",
         "plone.directives.form",
         "odict"
     ],
-    packages = ['silvuple'],
+    packages=['silvuple'],
     classifiers=[
         "Framework :: Plone",
         "Programming Language :: Python",
-    ],     
+    ],
     license="GPL2",
-    include_package_data = True,
+    include_package_data=True,
     entry_points="""
       # -*- Entry points: -*-
 
       [z3c.autoinclude.plugin]
       target = plone
-      """,        
-) 
+      """,
+)
