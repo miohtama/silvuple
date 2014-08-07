@@ -24,10 +24,12 @@ setup(name = "silvuple",
     author_email = "mikko@opensourcehacker.com",
     url = "http://opensourcehacker.com",
     install_requires = [
+        "Plone",
         "Products.LinguaPlone",
         "five.grok",
         "plone.app.dexterity",
         "plone.app.registry",
+        "plone.directives.form",
         "odict"
     ],
     packages = ['silvuple'],
