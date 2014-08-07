@@ -4,7 +4,8 @@ Changelog
 1.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add buildout and missing dependencies
+  [laulaz]
 
 
 1.1 (2013-09-20)
