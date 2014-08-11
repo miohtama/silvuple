@@ -1,22 +1,18 @@
 Changelog
 =========
 
-1.3 (unreleased)
-----------------
-
-- Nothing changed yet.
-
-
 1.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add buildout and missing dependencies
+  [laulaz]
 
 
 1.1 (2013-09-20)
 ----------------
 
-- Nothing changed yet.
+- Add missing MANIFEST
+  [fulv]
 
 
 1.0 (2013-09-20)

@@ -1,10 +1,10 @@
 Introduction
------------------
+------------
 
 Translation manager and helper for `Plone CMS <http://plone.org>`_ / LinguaPlone sites.
 
 Features
-------------
+--------
 
 * **Force admin language**: Useful e.g. for when admin needs to work with languages they are not familiar with. Very useful
   for strange languages (from western point of view) like China, Japanese or Russian. You can set this language in
@@ -14,7 +14,7 @@ Features
   and quickly get overview what contents still needs to be translated. 
 
 Notes
-------
+-----
 
 Admin language behavior
 =======================
@@ -28,7 +28,7 @@ site behavior differense in folder contents, search and other content listing vi
 administrative tasks impossible.
 
 Translation manager
-====================
+===================
 
 The *Translation Manager* is effective in the  current folder and all its childred: 
 if you have a site with a lot of content you might want to invoke
@@ -36,7 +36,7 @@ if you have a site with a lot of content you might want to invoke
 to speed issues of locating translated content.
 
 Authors
---------
+-------
 
 `Mikko Ohtamaa <http://opensourcehacker.com>`_
 
