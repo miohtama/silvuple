@@ -55,7 +55,7 @@ def get_editor_language(request):
         return None
 
     # Check if we are the editor
-    if not getSecurityManager().checkPermission(permissions.ModifyPortalContent, context):
+    if not getSecurityManager().checkPermission("silvuple: ViewInSilvupleLanguage", context):
         # Anon visitor, normal language ->
         return None
 
