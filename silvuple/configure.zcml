@@ -32,4 +32,12 @@
       name="silvuple"
       />
 
+  <!-- Permissions
+  -->
+
+  <permission
+        id="silvuple.ViewInSilvupleLanguage"
+        title="silvuple: ViewInSilvupleLanguage"
+  />
+
 </configure>
