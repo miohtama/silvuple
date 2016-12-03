@@ -7,6 +7,7 @@
 
   <permissions>
     <permission name="silvuple: ViewInSilvupleLanguage" acquire="False">
+    <role name="SilvupleLanguageReader"/>
     </permission>
   </permissions>
 
